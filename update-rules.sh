@@ -1,40 +1,49 @@
 #!/bin/bash
 
 # Set variables
-SNORT_RULES_URL="https://www.snort.org/rules/snortrules-snapshot-29200.tar.gz"
-SURICATA_RULES_URL="https://rules.emergingthreats.net/open/suricata-5.0/emerging.rules.tar.gz"
 TEMP_DIR="/tmp/nids-rules"
-RULES_DIR="/etc/suricata/rules"
 
-update_snort_rules() {
-    echo "Updating Snort rules..."
-    mkdir -p $TEMP_DIR
-    wget -O $TEMP_DIR/snort-rules.tar.gz $SNORT_RULES_URL
-    sudo tar xzf $TEMP_DIR/snort-rules.tar.gz -C /etc/snort/rules/
-    sudo systemctl restart snort
-}
+# Make sure the directory exists
+mkdir -p "$TEMP_DIR"
 
+# Function to update Suricata rules
 update_suricata_rules() {
     echo "Updating Suricata rules..."
-    mkdir -p $TEMP_DIR
-    wget -O $TEMP_DIR/suricata-rules.tar.gz $SURICATA_RULES_URL
-    sudo tar xzf $TEMP_DIR/suricata-rules.tar.gz -C /etc/suricata/rules/
-    if ! sudo suricata-update; then
-        echo "Warning: Some rules may have been disabled due to missing variables"
-    fi
-    if systemctl is-active --quiet suricata; then
+    
+    # First make sure all required variables are in the config
+    echo "Ensuring required variables are defined..."
+    sudo grep -q "HTTP_SERVERS" /etc/suricata/suricata.yaml || {
+        echo "Adding missing variables to configuration..."
+        sudo tee -a /etc/suricata/suricata.yaml > /dev/null << EOF
+
+vars:
+  address-groups:
+    HTTP_SERVERS: "HOME_NET"
+    SQL_SERVERS: "HOME_NET"
+  port-groups:
+    HTTP_PORTS: "[80,8080]"
+EOF
+    }
+    
+    # Use suricata-update for rules
+    echo "Running suricata-update..."
+    sudo suricata-update --verbose
+    
+    # Reload Suricata if running
+    if systemctl is-active --quiet suricata || pgrep -x suricata > /dev/null; then
+        echo "Reloading Suricata..."
         sudo systemctl reload suricata || sudo systemctl restart suricata
     fi
 }
 
-# Main
-if [[ -f /etc/snort/snort.conf ]]; then
-    update_snort_rules
-elif [[ -f /etc/suricata/suricata.yaml ]]; then
+# Main execution
+if [ -f /etc/suricata/suricata.yaml ]; then
     update_suricata_rules
 else
-    echo "No NIDS installation detected"
+    echo "No supported NIDS installation detected"
     exit 1
 fi
 
-rm -rf $TEMP_DIR
+# Clean up
+rm -rf "$TEMP_DIR"
+echo "Update completed"

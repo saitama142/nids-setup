@@ -1,14 +1,23 @@
 #!/bin/bash
 
-# Check which NIDS is installed
+# Detect NIDS installation
+NIDS="none"
 if [ -f /etc/suricata/suricata.yaml ]; then
     NIDS="suricata"
-    NIDS_STATUS=$(systemctl is-active suricata || echo "inactive")
     STATS_FILE="/var/log/suricata/stats.log"
     ALERT_FILE="/var/log/suricata/fast.log"
 else
-    echo "No NIDS installation detected"
+    echo "No supported NIDS installation detected"
     exit 1
+fi
+
+# Check if NIDS is running
+NIDS_RUNNING=false
+if pgrep -x suricata > /dev/null || pgrep -f "suricata -D" > /dev/null || systemctl is-active --quiet suricata; then
+    NIDS_RUNNING=true
+    NIDS_STATUS="active"
+else
+    NIDS_STATUS="inactive"
 fi
 
 # Function to display stats
@@ -17,22 +26,24 @@ display_stats() {
     echo "NIDS Type: ${NIDS^}"
     echo "Status: ${NIDS_STATUS}"
     
-    if [ "$NIDS_STATUS" = "active" ]; then
+    if [ "$NIDS_RUNNING" = true ]; then
         # Show process info
-        ps -p $(pidof suricata) -o %cpu,%mem,cmd=
-
+        ps -ef | grep -v grep | grep suricata | awk '{print $1" "$2" "$3" "$4" "$8" "$9" "$10}'
+        
         # Show alert count
         echo -e "\nAlert Statistics (last 24h):"
         if [ -f "$ALERT_FILE" ]; then
             sudo grep -c "Classification" "$ALERT_FILE" || echo "0"
         else
-            echo "0 (no alerts file found)"
+            echo "0"
         fi
-
-        # Show stats from stats.log if available
+        
+        # Show performance stats
+        echo -e "\nPerformance Statistics:"
         if [ -f "$STATS_FILE" ]; then
-            echo -e "\nPerformance Statistics:"
-            tail -n 20 "$STATS_FILE"
+            grep "Total" "$STATS_FILE" | tail -20
+        else 
+            echo "No statistics file found"
         fi
     else
         echo "Warning: NIDS service is not running"

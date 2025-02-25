@@ -2,16 +2,10 @@
 
 echo "Configuring Suricata..."
 
-# Verify Suricata installation and user
+# Verify Suricata installation
 if ! command -v suricata &> /dev/null; then
     echo "Error: Suricata is not installed"
     exit 1
-fi
-
-# Ensure Suricata user exists
-if ! getent passwd suricata >/dev/null; then
-    echo "Creating Suricata user..."
-    sudo useradd -r -g suricata -c "Suricata IDS" -s /sbin/nologin suricata || true
 fi
 
 # Backup original config
@@ -26,32 +20,28 @@ if ! ip link show "$interface" &> /dev/null; then
     exit 1
 fi
 
-# Load variables configuration
-VARS_CONFIG=""
-if [ -f "./suricata-vars-config.conf" ]; then
-    VARS_CONFIG=$(cat ./suricata-vars-config.conf)
-else
-    echo "Warning: Variables configuration file not found, using basic variables"
-    VARS_CONFIG="vars:
-  address-groups:
-    HOME_NET: \"[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]\"
-    EXTERNAL_NET: \"!\$HOME_NET\"
-    HTTP_SERVERS: \"\$HOME_NET\"
-    SMTP_SERVERS: \"\$HOME_NET\"
-    SQL_SERVERS: \"\$HOME_NET\"
-    DNS_SERVERS: \"\$HOME_NET\"
-  port-groups:
-    HTTP_PORTS: \"[80,8080]\"
-    SHELLCODE_PORTS: \"!80\""
-fi
-
-# Configure basic settings
+# Create a proper variables configuration file
 sudo tee /etc/suricata/suricata.yaml > /dev/null << EOF
 %YAML 1.1
 ---
-# Basic configuration
-
-${VARS_CONFIG}
+vars:
+  address-groups:
+    HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+    EXTERNAL_NET: "!HOME_NET"
+    HTTP_SERVERS: "HOME_NET"
+    SQL_SERVERS: "HOME_NET"
+    DNS_SERVERS: "HOME_NET"
+    SMTP_SERVERS: "HOME_NET"
+    FTP_SERVERS: "HOME_NET"
+    SSH_SERVERS: "HOME_NET"
+    AIM_SERVERS: "HOME_NET"
+  port-groups:
+    HTTP_PORTS: "[80,8080]"
+    SHELLCODE_PORTS: "!80"
+    ORACLE_PORTS: 1521
+    SSH_PORTS: 22
+    DNP3_PORTS: 20000
+    MODBUS_PORTS: 502
 
 default-log-dir: /var/log/suricata/
 
@@ -60,26 +50,28 @@ af-packet:
     cluster-id: 99
     cluster-type: cluster_flow
     defrag: yes
-    use-mmap: yes
-    tpacket-v3: yes
 
 # Enable stats logging
 stats:
   enabled: yes
-  file: stats.log
+  filename: stats.log
   interval: 60
 
 detect-engine:
-  - profile: medium
-  - custom-values:
-      toclient-groups: 3
-      toserver-groups: 3
+  profile: medium
+  sgh-mpm-context: auto
 
 outputs:
   - fast:
       enabled: yes
       filename: fast.log
       append: yes
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      types:
+        - alert
   - stats:
       enabled: yes
       filename: stats.log
@@ -90,18 +82,13 @@ app-layer:
     tls:
       enabled: yes
 
-# Basic configuration for optimal performance
+# Configuration for optimal performance
 max-pending-packets: 1024
 EOF
 
-# Create log directory with proper permissions
+# Create required directories
 sudo mkdir -p /var/log/suricata
-if getent passwd suricata >/dev/null; then
-    sudo chown -R suricata:suricata /var/log/suricata || true
-else
-    echo "Warning: Suricata user not found, using current user for permissions"
-    sudo chown -R $(whoami):$(whoami) /var/log/suricata
-fi
+sudo chown -R suricata:suricata /var/log/suricata 2>/dev/null || true
 
 # Test configuration
 echo "Testing Suricata configuration..."
