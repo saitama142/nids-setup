@@ -4,6 +4,7 @@
 SNORT_RULES_URL="https://www.snort.org/rules/snortrules-snapshot-29200.tar.gz"
 SURICATA_RULES_URL="https://rules.emergingthreats.net/open/suricata-5.0/emerging.rules.tar.gz"
 TEMP_DIR="/tmp/nids-rules"
+RULES_DIR="/etc/suricata/rules"
 
 update_snort_rules() {
     echo "Updating Snort rules..."
@@ -18,7 +19,12 @@ update_suricata_rules() {
     mkdir -p $TEMP_DIR
     wget -O $TEMP_DIR/suricata-rules.tar.gz $SURICATA_RULES_URL
     sudo tar xzf $TEMP_DIR/suricata-rules.tar.gz -C /etc/suricata/rules/
-    sudo systemctl restart suricata
+    if ! sudo suricata-update; then
+        echo "Warning: Some rules may have been disabled due to missing variables"
+    fi
+    if systemctl is-active --quiet suricata; then
+        sudo systemctl reload suricata || sudo systemctl restart suricata
+    fi
 }
 
 # Main

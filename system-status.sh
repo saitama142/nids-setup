@@ -2,11 +2,13 @@
 
 echo "=== System Status ==="
 
-# Check NIDS processes more accurately
+# Amélioration de la vérification du statut
 echo "NIDS Process Status:"
-if systemctl is-active --quiet suricata && pgrep suricata >/dev/null; then
+if pgrep -f suricata >/dev/null && systemctl is-active --quiet suricata; then
     echo "✓ Suricata is running"
-    systemctl status suricata --no-pager | grep 'Active:'
+    pgrep -f suricata | while read -r pid; do
+        ps -p "$pid" -o pid,ppid,%cpu,%mem,cmd
+    done
 else
     echo "✗ Suricata is not running"
 fi

@@ -76,6 +76,9 @@ app-layer:
   protocols:
     tls:
       enabled: yes
+
+# Basic configuration for optimal performance
+max-pending-packets: 1024
 EOF
 
 # Create log directory with proper permissions
