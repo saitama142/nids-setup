@@ -14,29 +14,29 @@ fi
 # Backup original config
 sudo cp /etc/suricata/suricata.yaml /etc/suricata/suricata.yaml.bak
 
-# Create a simple but functional configuration
+# Create a simple but functional configuration - CORRECT FORMAT FOR VARIABLES
 sudo tee /etc/suricata/suricata.yaml > /dev/null << EOF
 %YAML 1.1
 ---
 vars:
   address-groups:
     HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
-    EXTERNAL_NET: "!HOME_NET"
-    HTTP_SERVERS: "\$HOME_NET"
-    SQL_SERVERS: "\$HOME_NET"
-    DNS_SERVERS: "\$HOME_NET"
-    SMTP_SERVERS: "\$HOME_NET"
-    FTP_SERVERS: "\$HOME_NET"
-    SIP_SERVERS: "\$HOME_NET"
-    SSH_SERVERS: "\$HOME_NET"
-    AIM_SERVERS: "\$HOME_NET"
+    EXTERNAL_NET: "[!192.168.0.0/16,!10.0.0.0/8,!172.16.0.0/12]"
+    HTTP_SERVERS: "$HOME_NET"
+    SQL_SERVERS: "$HOME_NET"
+    DNS_SERVERS: "$HOME_NET"
+    SMTP_SERVERS: "$HOME_NET"
+    FTP_SERVERS: "$HOME_NET"
+    SIP_SERVERS: "$HOME_NET"
+    SSH_SERVERS: "$HOME_NET"
+    AIM_SERVERS: "$HOME_NET"
   port-groups:
-    HTTP_PORTS: "[80,8080]"
+    HTTP_PORTS: "80"
     SHELLCODE_PORTS: "!80"
-    ORACLE_PORTS: 1521
-    SSH_PORTS: 22
-    DNP3_PORTS: 20000
-    MODBUS_PORTS: 502
+    ORACLE_PORTS: "1521"
+    SSH_PORTS: "22"
+    DNP3_PORTS: "20000"
+    MODBUS_PORTS: "502"
 
 default-log-dir: /var/log/suricata/
 
