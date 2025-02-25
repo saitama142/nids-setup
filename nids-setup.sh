@@ -39,7 +39,7 @@ check_requirements() {
 show_menu() {
     clear
     echo "=== NIDS Setup Tool ==="
-    echo "1. Install/Configure NIDS"
+    echo "1. Install/Configure Suricata"
     echo "2. Update Rules"
     echo "3. View Statistics"
     echo "4. Backup Configuration"
@@ -49,42 +49,20 @@ show_menu() {
 
 # NIDS installation function
 install_nids() {
-    echo "Installing NIDS..."
-    echo "Please choose which NIDS you want to install:"
-    echo "1. Snort"
-    echo "2. Suricata"
-    read -p "Enter your choice (1 or 2): " nids_choice
+    echo "Installing Suricata..."
+    ./install-suricata.sh
 
-    case $nids_choice in
-        1)
-            echo "You have chosen to install Snort."
-            ./install-snort.sh
-            ;;
-        2)
-            echo "You have chosen to install Suricata."
-            ./install-suricata.sh
-            ;;
-        *)
-            echo "Invalid choice. Please run the script again and choose either 1 or 2."
-            return 1
-            ;;
-    esac
-
-    read -p "Do you want to configure the chosen NIDS now? (y/n): " configure_choice
-    if [ "$configure_choice" = "y" ] || [ "$configure_choice" = "Y" ]; then
-        if [ "$nids_choice" = "1" ]; then
-            ./configure-snort.sh
-        else
-            ./configure-suricata.sh
-        fi
+    read -p "Do you want to configure Suricata now? (y/n): " configure_choice
+    if [[ "$configure_choice" =~ ^[Yy]$ ]]; then
+        ./configure-suricata.sh
     fi
 
-    read -p "Do you want to test the chosen NIDS now? (y/n): " test_choice
-    if [ "$test_choice" = "y" ] || [ "$test_choice" = "Y" ]; then
+    read -p "Do you want to test Suricata now? (y/n): " test_choice
+    if [[ "$test_choice" =~ ^[Yy]$ ]]; then
         ./test-nids.sh
     fi
 
-    echo "NIDS setup completed. Thank you for using the NIDS Setup Tool."
+    echo "Suricata setup completed. Thank you for using the NIDS Setup Tool."
 }
 
 # Initialize

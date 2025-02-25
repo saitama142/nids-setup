@@ -5,12 +5,6 @@ echo
 
 # Check NIDS processes
 echo "NIDS Process Status:"
-if pgrep snort >/dev/null; then
-    echo "✓ Snort is running"
-else
-    echo "✗ Snort is not running"
-fi
-
 if pgrep suricata >/dev/null; then
     echo "✓ Suricata is running"
 else

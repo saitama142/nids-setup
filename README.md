@@ -1,6 +1,6 @@
 # 🛡️ Interactive NIDS Setup Tool
 
-An automated, interactive tool for setting up and managing Network Intrusion Detection Systems (Snort/Suricata) with a beautiful CLI interface.
+An automated, interactive tool for setting up and managing Network Intrusion Detection Systems (Suricata only) with a beautiful CLI interface.
 
 ![Security Level: Enterprise Ready](https://img.shields.io/badge/Security-Enterprise%20Ready-blue)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green)
@@ -18,7 +18,7 @@ chmod +x setup.sh
 
 - 🎯 Interactive CLI with clear menus and progress indicators
 - 🔄 Automatic dependency resolution
-- 🛡️ Support for both Snort and Suricata
+- 🛡️ Support for Suricata
 - 📊 Real-time monitoring and statistics
 - 🔒 Security-first approach with validation checks
 - 🔄 Automated rules updates
