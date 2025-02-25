@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NIDS Administration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>NIDS Administration Panel</h1>
+        <div class="dashboard">
+            <div class="stats">
+                <h2>System Status</h2>
+                <div id="status"></div>
+            </div>
+            <div class="controls">
+                <h2>Controls</h2>
+                <button onclick="updateRules()">Update Rules</button>
+                <button onclick="backupConfig()">Backup Configuration</button>
+                <button onclick="viewLogs()">View Logs</button>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

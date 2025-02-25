@@ -1,34 +1,90 @@
-# Network Intrusion Detection System (NIDS) Setup
+# 🛡️ Interactive NIDS Setup Tool
 
-## Description
-This project provides an interactive tool to set up and configure a Network Intrusion Detection System (NIDS) using Snort or Suricata. The tool guides the user through the installation, configuration, and testing of the chosen NIDS.
+An automated, interactive tool for setting up and managing Network Intrusion Detection Systems (Snort/Suricata) with a beautiful CLI interface.
 
-## Features
-- Interactive installation and configuration
-- Choice between Snort and Suricata
-- Detailed configuration and testing guides
+![Security Level: Enterprise Ready](https://img.shields.io/badge/Security-Enterprise%20Ready-blue)
+![License: MIT](https://img.shields.io/badge/License-MIT-green)
 
-## Prerequisites
-- Linux-based system (Ubuntu, Debian, CentOS, etc.)
+## 🚀 Quick Start
+
+```bash
+git clone https://github.com/yourusername/nids-setup.git
+cd nids-setup
+chmod +x setup.sh
+./setup.sh
+```
+
+## ✨ Features
+
+- 🎯 Interactive CLI with clear menus and progress indicators
+- 🔄 Automatic dependency resolution
+- 🛡️ Support for both Snort and Suricata
+- 📊 Real-time monitoring and statistics
+- 🔒 Security-first approach with validation checks
+- 🔄 Automated rules updates
+- 💾 Configuration backup and restore
+
+## 🔧 System Requirements
+
+- Ubuntu 20.04+ or Debian 11+ (Other distributions may work but are not officially supported)
+- Minimum 2GB RAM
+- Minimum 10GB free disk space
 - Root or sudo access
+- Active internet connection
 
-## Usage
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/yourusername/nids-setup.git
-    cd nids-setup
-    ```
-2. Make the setup script executable:
-    ```bash
-    chmod +x nids-setup.sh
-    ```
-3. Run the setup script:
-    ```bash
-    sudo ./nids-setup.sh
-    ```
+## 📋 Pre-Installation Checklist
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+The setup script will automatically check for:
 
-## Contributing
-Contributions are welcome! Please fork the repository and create a pull request with your changes.
+- [ ] Operating system compatibility
+- [ ] Required disk space
+- [ ] System permissions
+- [ ] Network connectivity
+- [ ] Required dependencies
+- [ ] Existing NIDS installations
+
+## 🛠️ Components
+
+1. **Installation Manager**
+   - Automated dependency resolution
+   - System compatibility checks
+   - Clean rollback on failure
+
+2. **Configuration Manager**
+   - Interactive network interface selection
+   - Rule management
+   - Performance tuning
+
+3. **Monitoring Dashboard**
+   - Real-time alerts
+   - System statistics
+   - Log visualization
+
+## 📚 Documentation
+
+Detailed documentation is available in the `docs` directory:
+- [Installation Guide](docs/installation.md)
+- [Configuration Guide](docs/configuration.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Best Practices](docs/best-practices.md)
+
+## 🐛 Troubleshooting
+
+If you encounter any issues:
+
+1. Check the logs in `/var/log/nids-setup/`
+2. Ensure all system requirements are met
+3. Run `./setup.sh --diagnose` for a system check
+4. Consult the [Troubleshooting Guide](docs/troubleshooting.md)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md).
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔒 Security
+
+Found a security issue? Please report it privately via our [Security Policy](SECURITY.md).

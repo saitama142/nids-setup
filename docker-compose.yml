@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+  api:
+    build: ./api
+    volumes:
+      - /var/log/nids:/logs
+      - /etc/nids-setup:/config
+    ports:
+      - "3000:3000"
+
+  monitoring:
+    image: grafana/grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  grafana_data:
