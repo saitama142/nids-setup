@@ -2,18 +2,18 @@
 
 set -e
 
-# Color definitions
+# Définition des couleurs
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Log file setup
-SETUP_LOG="/var/log/nids-setup/setup.log"
+# Configuration des logs
+SETUP_LOG="/var/log/nids-setup/setup.log" 
 INSTALL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Function to print pretty messages
+# Fonctions d'affichage
 print_status() {
     echo -e "${BLUE}[*]${NC} $1"
 }
