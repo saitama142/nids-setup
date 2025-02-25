@@ -2,10 +2,16 @@
 
 echo "Configuring Suricata..."
 
-# Verify Suricata installation
+# Verify Suricata installation and user
 if ! command -v suricata &> /dev/null; then
     echo "Error: Suricata is not installed"
     exit 1
+fi
+
+# Ensure Suricata user exists
+if ! getent passwd suricata >/dev/null; then
+    echo "Creating Suricata user..."
+    sudo useradd -r -g suricata -c "Suricata IDS" -s /sbin/nologin suricata || true
 fi
 
 # Backup original config
@@ -59,7 +65,12 @@ EOF
 
 # Create log directory with proper permissions
 sudo mkdir -p /var/log/suricata
-sudo chown -R suricata:suricata /var/log/suricata
+if getent passwd suricata >/dev/null; then
+    sudo chown -R suricata:suricata /var/log/suricata || true
+else
+    echo "Warning: Suricata user not found, using current user for permissions"
+    sudo chown -R $(whoami):$(whoami) /var/log/suricata
+fi
 
 # Test configuration
 echo "Testing Suricata configuration..."
