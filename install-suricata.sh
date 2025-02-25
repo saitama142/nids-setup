@@ -1,18 +1,31 @@
 #!/bin/bash
 
-# Installation steps for Suricata
 echo "Installing Suricata..."
 
 # Update package lists
 sudo apt-get update
 
-# Install Suricata
-sudo apt-get install -y suricata
+# Install Suricata and dependencies
+sudo apt-get install -y \
+    suricata \
+    suricata-update
+
+# Create required directories
+sudo mkdir -p /var/lib/suricata
+sudo mkdir -p /var/log/suricata
+sudo chown -R suricata:suricata /var/lib/suricata /var/log/suricata
+
+# Initialize Suricata update
+sudo suricata-update update-sources || true
+sudo suricata-update --no-reload || true
 
 # Confirm installation
-suricata_version=$(suricata -V)
-if [[ $suricata_version == *"Suricata"* ]]; then
+if suricata -V &> /dev/null; then
     echo "Suricata installed successfully!"
+    read -p "Do you want to configure Suricata now? (y/n): " configure
+    if [[ "$configure" =~ ^[Yy]$ ]]; then
+        ./configure-suricata.sh
+    fi
 else
     echo "Failed to install Suricata."
     exit 1
