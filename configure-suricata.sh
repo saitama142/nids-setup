@@ -9,10 +9,14 @@ read -p "Enter the network interface Suricata should listen on (e.g., eth0): " i
 # Edit Suricata configuration file
 sudo sed -i "s/^\(\s*interface:\s*\).*/\1$interface/" /etc/suricata/suricata.yaml
 
+# Download and install default rules
+echo "Downloading default rules..."
+sudo suricata-update
+
 # Test Suricata configuration
 sudo suricata -T -c /etc/suricata/suricata.yaml -i $interface
 
-# Enable Suricata as a service
+# Enable and start Suricata service
 sudo systemctl enable suricata
 sudo systemctl start suricata
 
