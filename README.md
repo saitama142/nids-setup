@@ -27,8 +27,8 @@ chmod +x setup.sh
 ## 🔧 System Requirements
 
 - Ubuntu 20.04+ or Debian 11+ (Other distributions may work but are not officially supported)
-- Minimum 2GB RAM
-- Minimum 10GB free disk space
+- Minimum 512MB RAM
+- Minimum 5GB free disk space
 - Root or sudo access
 - Active internet connection
 

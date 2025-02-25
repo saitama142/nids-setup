@@ -32,9 +32,14 @@ print_warning() {
 
 # Setup logging
 setup_logging() {
-    sudo mkdir -p "$(dirname "$SETUP_LOG")"
-    sudo touch "$SETUP_LOG"
-    sudo chmod 644 "$SETUP_LOG"
+    if ! sudo mkdir -p "$(dirname "$SETUP_LOG")" 2>/dev/null; then
+        # If we can't create the directory with sudo, try a user-local log
+        SETUP_LOG="$HOME/nids-setup.log"
+        touch "$SETUP_LOG"
+    else
+        sudo touch "$SETUP_LOG"
+        sudo chmod 666 "$SETUP_LOG"
+    fi
     exec 1> >(tee -a "$SETUP_LOG")
     exec 2> >(tee -a "$SETUP_LOG" >&2)
 }
@@ -49,17 +54,17 @@ check_system_requirements() {
         exit 1
     fi
 
-    # Check RAM
+    # Check RAM (reduced to 512MB)
     total_ram=$(free -m | awk '/^Mem:/{print $2}')
-    if [ "$total_ram" -lt 2048 ]; then
-        print_error "Minimum 2GB RAM required"
+    if [ "$total_ram" -lt 512 ]; then
+        print_error "Minimum 512MB RAM required"
         exit 1
     fi
 
-    # Check disk space
+    # Check disk space (reduced to 5GB)
     free_space=$(df -m / | awk 'NR==2 {print $4}')
-    if [ "$free_space" -lt 10240 ]; then
-        print_error "Minimum 10GB free disk space required"
+    if [ "$free_space" -lt 5120 ]; then
+        print_error "Minimum 5GB free disk space required"
         exit 1
     fi
 
