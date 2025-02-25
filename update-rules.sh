@@ -2,6 +2,7 @@
 
 # Set variables
 TEMP_DIR="/tmp/nids-rules"
+LOG_FILE="/tmp/suricata-update.log"
 
 # Make sure the directory exists
 mkdir -p "$TEMP_DIR"
@@ -10,24 +11,22 @@ mkdir -p "$TEMP_DIR"
 update_suricata_rules() {
     echo "Updating Suricata rules..."
     
-    # First make sure all required variables are in the config
+    # Fix configuration to prevent variable errors
     echo "Ensuring required variables are defined..."
-    sudo grep -q "HTTP_SERVERS" /etc/suricata/suricata.yaml || {
-        echo "Adding missing variables to configuration..."
-        sudo tee -a /etc/suricata/suricata.yaml > /dev/null << EOF
-
-vars:
-  address-groups:
-    HTTP_SERVERS: "HOME_NET"
-    SQL_SERVERS: "HOME_NET"
-  port-groups:
-    HTTP_PORTS: "[80,8080]"
-EOF
-    }
     
-    # Use suricata-update for rules
-    echo "Running suricata-update..."
-    sudo suricata-update --verbose
+    # Check if the variables section exists and is properly formatted
+    if ! grep -q "^vars:" /etc/suricata/suricata.yaml; then
+        echo "Adding missing 'vars' section to configuration..."
+        sudo sed -i '1s/^/%YAML 1.1\n---\nvars:\n  address-groups:\n    HOME_NET: "[192.168.0.0\/16,10.0.0.0\/8,172.16.0.0\/12]"\n    EXTERNAL_NET: "!HOME_NET"\n    HTTP_SERVERS: "HOME_NET"\n    SQL_SERVERS: "HOME_NET"\n    DNS_SERVERS: "HOME_NET"\n  port-groups:\n    HTTP_PORTS: "[80,8080]"\n\n/' /etc/suricata/suricata.yaml
+    fi
+    
+    # Use suricata-update with reduced verbosity
+    echo "Running suricata-update (please wait, this may take a minute)..."
+    sudo suricata-update --quiet > "$LOG_FILE" 2>&1
+    
+    # Show summary instead of all warnings
+    WARNING_COUNT=$(grep -c "Warning" "$LOG_FILE")
+    echo "Rule update completed with $WARNING_COUNT warnings (details in $LOG_FILE)"
     
     # Reload Suricata if running
     if systemctl is-active --quiet suricata || pgrep -x suricata > /dev/null; then
