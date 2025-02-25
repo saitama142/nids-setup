@@ -8,7 +8,7 @@ An automated, interactive tool for setting up and managing Network Intrusion Det
 ## 🚀 Quick Start
 
 ```bash
-git clone https://github.com/yourusername/nids-setup.git
+git clone https://github.com/saitama142/nids-setup.git
 cd nids-setup
 chmod +x setup.sh
 ./setup.sh
