@@ -11,27 +11,47 @@ mkdir -p "$TEMP_DIR"
 update_suricata_rules() {
     echo "Updating Suricata rules..."
     
-    # Fix configuration to prevent variable errors
-    echo "Ensuring required variables are defined..."
+    # Create minimal temporary configuration with all required variables
+    TEMP_CONFIG="$TEMP_DIR/suricata-temp.yaml"
+    cat > "$TEMP_CONFIG" << EOF
+%YAML 1.1
+---
+vars:
+  address-groups:
+    HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+    EXTERNAL_NET: "!HOME_NET"
+    HTTP_SERVERS: "\$HOME_NET"
+    SQL_SERVERS: "\$HOME_NET" 
+    DNS_SERVERS: "\$HOME_NET"
+    SMTP_SERVERS: "\$HOME_NET"
+    FTP_SERVERS: "\$HOME_NET"
+    SIP_SERVERS: "\$HOME_NET"
+    SSH_SERVERS: "\$HOME_NET"
+    AIM_SERVERS: "\$HOME_NET"
+  port-groups:
+    HTTP_PORTS: "[80,8080]"
+    SHELLCODE_PORTS: "!80"
+    ORACLE_PORTS: 1521
+    SSH_PORTS: 22
+    DNP3_PORTS: 20000
+    MODBUS_PORTS: 502
+EOF
+
+    # Update Suricata rules quietly
+    echo "Downloading and updating rules..."
+    sudo suricata-update --quiet --config "$TEMP_CONFIG" > "$LOG_FILE" 2>&1
     
-    # Check if the variables section exists and is properly formatted
-    if ! grep -q "^vars:" /etc/suricata/suricata.yaml; then
-        echo "Adding missing 'vars' section to configuration..."
-        sudo sed -i '1s/^/%YAML 1.1\n---\nvars:\n  address-groups:\n    HOME_NET: "[192.168.0.0\/16,10.0.0.0\/8,172.16.0.0\/12]"\n    EXTERNAL_NET: "!HOME_NET"\n    HTTP_SERVERS: "HOME_NET"\n    SQL_SERVERS: "HOME_NET"\n    DNS_SERVERS: "HOME_NET"\n  port-groups:\n    HTTP_PORTS: "[80,8080]"\n\n/' /etc/suricata/suricata.yaml
-    fi
+    # Stop and disable Suricata to prevent future issues
+    sudo systemctl stop suricata 2>/dev/null || true
     
-    # Use suricata-update with reduced verbosity
-    echo "Running suricata-update (please wait, this may take a minute)..."
-    sudo suricata-update --quiet > "$LOG_FILE" 2>&1
-    
-    # Show summary instead of all warnings
-    WARNING_COUNT=$(grep -c "Warning" "$LOG_FILE")
-    echo "Rule update completed with $WARNING_COUNT warnings (details in $LOG_FILE)"
-    
-    # Reload Suricata if running
-    if systemctl is-active --quiet suricata || pgrep -x suricata > /dev/null; then
-        echo "Reloading Suricata..."
-        sudo systemctl reload suricata || sudo systemctl restart suricata
+    # Verify configuration
+    if sudo suricata -T -c /etc/suricata/suricata.yaml &>/dev/null; then
+        echo "Configuration verified successfully"
+        sudo systemctl enable suricata
+        sudo systemctl start suricata
+        echo "Suricata restarted with new rules"
+    else
+        echo "Configuration has errors - please run the configure option"
     fi
 }
 
