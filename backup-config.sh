@@ -1,11 +1,14 @@
 #!/bin/bash
 
 # Set backup directory
-BACKUP_DIR="/home/coder/nids-backup"
+BACKUP_DIR="/var/lib/nids-backup"
 DATE=$(date +%Y%m%d_%H%M%S)
 
-# Create backup directory
-mkdir -p "$BACKUP_DIR"
+# Create backup directory with proper permissions
+if ! mkdir -p "$BACKUP_DIR" 2>/dev/null; then
+    BACKUP_DIR="/tmp/nids-backup"
+    mkdir -p "$BACKUP_DIR"
+fi
 
 # Function to backup Suricata configuration
 backup_suricata() {

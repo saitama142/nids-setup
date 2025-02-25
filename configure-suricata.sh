@@ -30,10 +30,14 @@ fi
 sudo tee /etc/suricata/suricata.yaml > /dev/null << EOF
 %YAML 1.1
 ---
+# Basic configuration
 vars:
   address-groups:
     HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
     EXTERNAL_NET: "!$HOME_NET"
+    HTTP_SERVERS: "$HOME_NET"
+    SQL_SERVERS: "$HOME_NET"
+    HTTP_PORTS: "80"
 
 default-log-dir: /var/log/suricata/
 
@@ -44,6 +48,12 @@ af-packet:
     defrag: yes
     use-mmap: yes
     tpacket-v3: yes
+
+# Enable stats logging
+stats:
+  enabled: yes
+  file: stats.log
+  interval: 60
 
 detect-engine:
   - profile: medium
@@ -56,6 +66,10 @@ outputs:
       enabled: yes
       filename: fast.log
       append: yes
+  - stats:
+      enabled: yes
+      filename: stats.log
+      interval: 60
 
 app-layer:
   protocols:
