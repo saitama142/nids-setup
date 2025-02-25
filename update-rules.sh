@@ -2,57 +2,46 @@
 
 # Set variables
 TEMP_DIR="/tmp/nids-rules"
-LOG_FILE="/tmp/suricata-update.log"
+LOG_FILE="/var/log/suricata/update.log"
 
-# Make sure the directory exists
+# Make sure directory exists
 mkdir -p "$TEMP_DIR"
 
-# Function to update Suricata rules
+# Trap pour capture l'interruption (CTRL+C)
+trap 'echo "Update interrupted"; exit 1' INT TERM
+
+# Function to update Suricata rules with timeout
 update_suricata_rules() {
     echo "Updating Suricata rules..."
+    echo "Cette opération peut prendre quelques minutes, veuillez patienter..."
     
-    # Create minimal temporary configuration with all required variables
-    TEMP_CONFIG="$TEMP_DIR/suricata-temp.yaml"
-    cat > "$TEMP_CONFIG" << EOF
-%YAML 1.1
----
-vars:
-  address-groups:
-    HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
-    EXTERNAL_NET: "!HOME_NET"
-    HTTP_SERVERS: "\$HOME_NET"
-    SQL_SERVERS: "\$HOME_NET" 
-    DNS_SERVERS: "\$HOME_NET"
-    SMTP_SERVERS: "\$HOME_NET"
-    FTP_SERVERS: "\$HOME_NET"
-    SIP_SERVERS: "\$HOME_NET"
-    SSH_SERVERS: "\$HOME_NET"
-    AIM_SERVERS: "\$HOME_NET"
-  port-groups:
-    HTTP_PORTS: "[80,8080]"
-    SHELLCODE_PORTS: "!80"
-    ORACLE_PORTS: 1521
-    SSH_PORTS: 22
-    DNP3_PORTS: 20000
-    MODBUS_PORTS: 502
-EOF
-
-    # Update Suricata rules quietly
-    echo "Downloading and updating rules..."
-    sudo suricata-update --quiet --config "$TEMP_CONFIG" > "$LOG_FILE" 2>&1
+    # Afficher un indicateur d'activité pendant l'exécution
+    (
+        while :; do
+            for s in / - \\ \|; do
+                echo -ne "\r$s Téléchargement des règles en cours... $s"
+                sleep 0.5
+            done
+        done
+    ) &
+    SPINNER_PID=$!
     
-    # Stop and disable Suricata to prevent future issues
-    sudo systemctl stop suricata 2>/dev/null || true
+    # Tuer le spinner à la sortie
+    trap "kill $SPINNER_PID 2>/dev/null" EXIT
     
-    # Verify configuration
-    if sudo suricata -T -c /etc/suricata/suricata.yaml &>/dev/null; then
-        echo "Configuration verified successfully"
-        sudo systemctl enable suricata
-        sudo systemctl start suricata
-        echo "Suricata restarted with new rules"
+    # Exécuter avec timeout
+    if timeout 300 sudo suricata-update --no-reload 2>/dev/null; then
+        echo -e "\rRègles mises à jour avec succès!            "
+        sudo systemctl restart suricata
     else
-        echo "Configuration has errors - please run the configure option"
+        echo -e "\rÉchec de la mise à jour des règles. Vérifier $LOG_FILE"
     fi
+    
+    # Tuer le spinner
+    kill $SPINNER_PID 2>/dev/null
+    wait $SPINNER_PID 2>/dev/null
+    
+    echo "Mise à jour terminée."
 }
 
 # Main execution
@@ -65,4 +54,3 @@ fi
 
 # Clean up
 rm -rf "$TEMP_DIR"
-echo "Update completed"
