@@ -13,7 +13,7 @@ Un outil simple pour installer et configurer un système de détection d'intrusi
 ## Installation
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/saitama142/nids-setup/
 cd nids-setup
 chmod +x setup.sh
 ./setup.sh
