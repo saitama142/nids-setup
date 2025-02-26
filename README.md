@@ -51,17 +51,9 @@ chmod +x setup.sh
 2. Follow on-screen instructions
 3. Use the interactive menu to manage your NIDS
 
-<details>
-<summary>📸 Screenshots</summary>
-<p align="center">
-  <i>Screenshots will be added soon</i>
-</p>
-</details>
-
 ## 📚 Documentation
 
 Check the [docs](./docs) folder for detailed documentation:
-- [Advanced Configuration](./docs/advanced-configuration.md)
 - [Rules Update](./docs/update-rules.md)
 - [Backup and Restore](./docs/backup-restore.md)
 - [Troubleshooting](./docs/troubleshooting.md)
