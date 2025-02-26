@@ -1,14 +1,43 @@
-# Sauvegarde et Restauration
+# Backup and Restore
 
-## Sauvegarde de la configuration
+## How Backups Work
 
-Le script `backup-config.sh` crée une sauvegarde complète de votre configuration NIDS.
+The `backup-config.sh` script creates comprehensive backups of your NIDS configuration:
 
-### Fonctionnement
+- Creates a compressed tar archive of configuration files
+- Stores backups in `/var/lib/nids-backup` (or `/tmp/nids-backup` if not accessible)
+- Keeps the 5 most recent backups with timestamps
+- Includes all custom rules and modifications
+- Generates a backup log with configuration details
 
-- Crée une archive tar compressée des fichiers de configuration
-- Stocke les sauvegardes dans `/var/lib/nids-backup` (ou `/tmp/nids-backup` si non accessible)
-- Conserve les 5 dernières sauvegardes
+## Restoring Backups
 
-### Utilisation
+To restore from a backup:
+
+```bash
+# List available backups
+./backup-config.sh --list
+
+# Restore from the most recent backup
+./backup-config.sh --restore
+
+# Restore from a specific backup
+./backup-config.sh --restore=/var/lib/nids-backup/nids-backup-20220315-143022.tar.gz
+```
+
+The restore process:
+1. Validates the backup archive integrity
+2. Creates a backup of the current state before proceeding
+3. Extracts configuration files to their original locations
+4. Restarts services to apply the restored configuration
+5. Performs a configuration test to verify restoration success
+
+## Automated Backups
+
+Consider scheduling regular backups:
+
+```bash
+# Example: Daily backup at 2:30 AM
+30 2 * * * /path/to/backup-config.sh
+```
 

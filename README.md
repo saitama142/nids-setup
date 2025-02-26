@@ -1,33 +1,29 @@
 # 🛡️ NIDS Setup Tool
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-0.1.2-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)
 
-> Un outil simple et puissant pour installer et configurer un système de détection d'intrusion réseau (NIDS) basé sur Suricata.
+> A simple yet powerful tool for installing and configuring a Network Intrusion Detection System (NIDS) based on Suricata.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/OISF/suricata/master/doc/images/suricata.png" alt="Suricata Logo" width="300">
-</p>
+## ✨ Features
 
-## ✨ Fonctionnalités
+- 🚀 Automated Suricata installation
+- ⚙️ Step-by-step guided configuration
+- 🔄 Detection rules update
+- 💾 Configuration backup and restore
+- 📊 System monitoring and statistics
+- 🧪 Integrated functionality tests
 
-- 🚀 Installation automatisée de Suricata
-- ⚙️ Configuration guidée pas à pas
-- 🔄 Mise à jour des règles de détection
-- 💾 Sauvegarde et restauration de configuration
-- 📊 Surveillance du système et statistiques
-- 🧪 Tests de fonctionnement intégrés
-
-## 📋 Prérequis
+## 📋 Prerequisites
 
 - 🐧 Ubuntu/Debian
 - 🧠 512MB RAM minimum
-- 💽 5GB espace disque minimum
-- 🌐 Connexion internet
-- 🔑 Droits sudo
+- 💽 5GB disk space minimum
+- 🌐 Internet connection
+- 🔑 Sudo rights
 
-## 🚀 Installation rapide
+## 🚀 Quick Installation
 
 ```bash
 git clone https://github.com/saitama142/nids-setup/
@@ -36,45 +32,40 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-## 📜 Scripts disponibles
+## 📜 Available Scripts
 
 | Script | Description |
 |--------|-------------|
-| `setup.sh` | Script principal d'installation |
-| `install-suricata.sh` | Installation de Suricata |
-| `configure-suricata.sh` | Configuration de Suricata |
-| `update-rules.sh` | Mise à jour des règles |
-| `view-stats.sh` | Affichage des statistiques |
-| `system-status.sh` | État du système |
-| `test-nids.sh` | Test de la configuration |
-| `backup-config.sh` | Sauvegarde de la configuration |
+| `setup.sh` | Main installation script |
+| `install-suricata.sh` | Suricata installation |
+| `configure-suricata.sh` | Suricata configuration |
+| `update-rules.sh` | Rules update |
+| `view-stats.sh` | Statistics display |
+| `system-status.sh` | System status |
+| `test-nids.sh` | Configuration testing |
+| `backup-config.sh` | Configuration backup |
 
-## 🔧 Utilisation
+## 🔧 Usage
 
-1. Exécutez `./setup.sh`
-2. Suivez les instructions à l'écran
-3. Utilisez le menu interactif pour gérer votre NIDS
+1. Run `./setup.sh`
+2. Follow on-screen instructions
+3. Use the interactive menu to manage your NIDS
 
 <details>
-<summary>📸 Captures d'écran</summary>
+<summary>📸 Screenshots</summary>
 <p align="center">
-  <i>Les captures d'écran seront ajoutées prochainement</i>
+  <i>Screenshots will be added soon</i>
 </p>
 </details>
 
 ## 📚 Documentation
 
-Consultez le dossier [docs](./docs) pour une documentation détaillée:
-- [Guide d'installation](./docs/installation-guide.md)
-- [Configuration avancée](./docs/advanced-configuration.md)
-- [Mise à jour des règles](./docs/update-rules.md)
-- [Sauvegarde et restauration](./docs/backup-restore.md)
-- [Dépannage](./docs/troubleshooting.md)
+Check the [docs](./docs) folder for detailed documentation:
+- [Advanced Configuration](./docs/advanced-configuration.md)
+- [Rules Update](./docs/update-rules.md)
+- [Backup and Restore](./docs/backup-restore.md)
+- [Troubleshooting](./docs/troubleshooting.md)
 
-## 🆘 Support
+## 📄 License
 
-Pour toute question ou problème, créez une issue dans le dépôt ou contactez-nous à support@example.com.
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
