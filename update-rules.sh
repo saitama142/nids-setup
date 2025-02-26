@@ -7,37 +7,56 @@ LOG_FILE="/var/log/suricata/update.log"
 # Make sure directory exists
 mkdir -p "$TEMP_DIR"
 
-# Trap pour capture l'interruption (CTRL+C)
-trap 'echo "Update interrupted"; exit 1' INT TERM
-
-# Function to update Suricata rules with timeout
+# Function to update Suricata rules with low resources
 update_suricata_rules() {
     echo "Updating Suricata rules..."
     echo "Cette opération peut prendre quelques minutes, veuillez patienter..."
     
-    # Afficher un indicateur d'activité pendant l'exécution
+    # Display a spinner
     (
         while :; do
             for s in / - \\ \|; do
                 echo -ne "\r$s Téléchargement des règles en cours... $s"
-                sleep 0.5
+                sleep 1
             done
         done
     ) &
     SPINNER_PID=$!
     
-    # Tuer le spinner à la sortie
+    # Kill the spinner on exit
     trap "kill $SPINNER_PID 2>/dev/null" EXIT
     
-    # Exécuter avec timeout
-    if timeout 300 sudo suricata-update --no-reload 2>/dev/null; then
+    # Try with reduced memory usage by using nice and limiting rules
+    if nice -n 19 sudo suricata-update --no-reload --quiet --no-merge --disable-conf /etc/suricata/disable.conf; then
         echo -e "\rRègles mises à jour avec succès!            "
-        sudo systemctl restart suricata
     else
-        echo -e "\rÉchec de la mise à jour des règles. Vérifier $LOG_FILE"
+        # If first attempt fails, try with minimal ruleset
+        echo -e "\r- Premier essai échoué, essai avec ensemble de règles minimal..."
+        
+        # Create a disable.conf file to disable most rules
+        sudo tee /etc/suricata/disable.conf > /dev/null << EOF
+# Disable most rules to save memory
+re:malware
+re:policy
+re:trojan
+re:user_agents
+re:web-activex
+re:web-client
+re:web-specific-apps
+EOF
+        
+        if nice -n 19 sudo suricata-update --no-reload --quiet --disable-conf /etc/suricata/disable.conf; then
+            echo "Règles minimales mises à jour avec succès!"
+        else
+            echo "Échec de la mise à jour des règles."
+        fi
     fi
     
-    # Tuer le spinner
+    # Attempt to restart/reload Suricata
+    echo "Redémarrage du service Suricata..."
+    sudo systemctl restart suricata || sudo systemctl reload suricata || true
+    
+    # Kill the spinner
     kill $SPINNER_PID 2>/dev/null
     wait $SPINNER_PID 2>/dev/null
     
