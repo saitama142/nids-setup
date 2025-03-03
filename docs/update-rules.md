@@ -56,4 +56,3 @@ If updates fail, check:
 1. Internet connectivity
 2. Disk space
 3. Update logs at `/var/log/suricata/update.log`
-

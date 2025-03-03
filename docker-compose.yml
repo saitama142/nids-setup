@@ -5,8 +5,8 @@ services:
     build: ./web
     ports:
       - "8080:80"
-    depends_on:
-      - api
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
 
   api:
     build: ./api

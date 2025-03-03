@@ -40,4 +40,3 @@ Consider scheduling regular backups:
 # Example: Daily backup at 2:30 AM
 30 2 * * * /path/to/backup-config.sh
 ```
-
