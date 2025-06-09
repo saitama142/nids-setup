@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)
 
-> A simple yet powerful tool for installing and configuring a Network Intrusion Detection System (NIDS) based on Suricata.
+> A secure, lightweight tool for installing and configuring a Network Intrusion Detection System (NIDS) based on Suricata.
 
 ## ✨ Features
 
@@ -12,8 +12,9 @@
 - ⚙️ Step-by-step guided configuration
 - 🔄 Detection rules update
 - 💾 Configuration backup and restore
-- 📊 System monitoring and statistics
+- 🛡️ Security-focused design
 - 🧪 Integrated functionality tests
+- 🔒 Minimal dependencies
 
 ## 📋 Prerequisites
 
@@ -32,24 +33,39 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-## 📜 Available Scripts
+## 📜 Core Scripts
 
-| Script | Description |
-|--------|-------------|
-| `setup.sh` | Main installation script |
-| `install-suricata.sh` | Suricata installation |
-| `configure-suricata.sh` | Suricata configuration |
-| `update-rules.sh` | Rules update |
-| `view-stats.sh` | Statistics display |
-| `system-status.sh` | System status |
-| `test-nids.sh` | Configuration testing |
-| `backup-config.sh` | Configuration backup |
+| Script | Description | Security Level |
+|--------|-------------|----------------|
+| `setup.sh` | Main installation script | 🔐 Requires root |
+| `install-suricata.sh` | Suricata installation | 🔐 Requires root |
+| `configure-suricata.sh` | Suricata configuration | 🔐 Requires root |
+| `update-rules.sh` | Rules update | 🔒 Runs as user |
+| `system-status.sh` | System status | 🔒 Runs as user |
+| `test-nids.sh` | Configuration testing | 🔒 Runs as user |
+| `backup-config.sh` | Configuration backup | 🔐 Requires root |
+
+## 🔐 Security Considerations
+
+- All scripts perform basic sanity checks before execution
+- Root privileges are only requested when absolutely necessary
+- No persistent web services or open ports
+- Minimal dependencies (only Suricata and basic system tools)
+- All configuration files preserve original permissions
 
 ## 🔧 Usage
 
-1. Run `./setup.sh`
-2. Follow on-screen instructions
-3. Use the interactive menu to manage your NIDS
+```bash
+# Standard installation
+sudo ./setup.sh
+
+# Post-installation management
+./system-status.sh    # Check system health
+./update-rules.sh     # Update detection rules
+./test-nids.sh        # Verify configuration
+
+# Interactive mode
+./setup.sh --interactive
 
 ## 📚 Documentation
 
