@@ -1,70 +1,70 @@
-# Guide d'Installation
+# Installation Guide
 
-Ce guide vous accompagnera à travers le processus complet d'installation et de configuration initiale de votre NIDS basé sur Suricata.
+This guide will walk you through the complete installation and initial configuration process for your Suricata-based NIDS.
 
-## Méthodes d'installation
+## Installation Methods
 
-### 1. Installation automatisée (recommandée)
+### 1. Automated Installation (Recommended)
 
 ```bash
 ./setup.sh
 ```
 
-Cette commande lance l'assistant d'installation qui vous guidera à travers toutes les étapes nécessaires.
+This command launches the installation wizard that will guide you through all necessary steps.
 
-### 2. Installation manuelle
+### 2. Manual Installation
 
-Si vous préférez installer les composants individuellement:
+If you prefer to install components individually:
 
 ```bash
-# Installation de Suricata
+# Suricata installation
 ./install-suricata.sh
 
 # Configuration
 ./configure-suricata.sh
 
-# Première mise à jour des règles
+# Initial rules update
 ./update-rules.sh
 ```
 
-## Options d'installation avancées
+## Advanced Installation Options
 
-Vous pouvez passer des paramètres au script d'installation:
+You can pass parameters to the installation script:
 
 ```bash
-./setup.sh --no-prompt        # Installation sans questions
-./setup.sh --minimal          # Installation minimale
-./setup.sh --interface=eth0   # Spécifier l'interface à surveiller
+./setup.sh --no-prompt        # Non-interactive installation
+./setup.sh --minimal          # Minimal installation
+./setup.sh --interface=eth0   # Specify monitoring interface
 ```
 
-## Vérification de l'installation
+## Installation Verification
 
-Après l'installation, vérifiez que tout fonctionne correctement:
+After installation, verify everything works correctly:
 
 ```bash
 ./system-status.sh
 ./test-nids.sh
 ```
 
-## Résolution des problèmes courants
+## Troubleshooting Common Issues
 
-### Suricata ne démarre pas
+### Suricata Fails to Start
 
-Vérifiez les journaux:
+Check logs:
 ```bash
 sudo journalctl -u suricata
 ```
 
-### Erreurs de configuration
+### Configuration Errors
 
-Validez votre configuration:
+Validate your configuration:
 ```bash
 suricata -T -c /etc/suricata/suricata.yaml
 ```
 
-## Configuration post-installation recommandée
+## Recommended Post-Installation Configuration
 
-1. Configurez des alertes par email
-2. Intégrez avec votre système de journalisation
-3. Établissez une rotation des logs
-4. Planifiez des mises à jour automatiques des règles
+1. Configure email alerts
+2. Integrate with your logging system
+3. Set up log rotation
+4. Schedule automatic rule updates
