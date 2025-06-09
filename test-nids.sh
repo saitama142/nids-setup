@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Load notification config if exists
+[ -f /etc/nids-setup/notify.conf ] && source /etc/nids-setup/notify.conf
+
 # Function to send test traffic
 send_test_traffic() {
     echo "Sending test traffic..."
@@ -10,6 +13,28 @@ send_test_traffic() {
 check_suricata_logs() {
     echo "Checking Suricata logs..."
     sudo tail -n 20 /var/log/suricata/fast.log
+}
+
+# Function to test notifications
+test_notifications() {
+    if [ -f "/etc/nids-setup/notify.conf" ]; then
+        echo "Testing notifications..."
+        
+        # Test email notification if configured
+        if [ -n "$EMAIL_RECIPIENT" ]; then
+            echo "Sending test email..."
+            echo "Test alert from NIDS" | mail -s "NIDS Test Alert" "$EMAIL_RECIPIENT"
+        fi
+        
+        # Test Gotify notification if configured
+        if [ -n "$GOTIFY_SERVER" ] && [ -n "$GOTIFY_TOKEN" ]; then
+            echo "Sending test Gotify notification..."
+            curl -X POST "$GOTIFY_SERVER/message?token=$GOTIFY_TOKEN" \
+                -F "title=NIDS Test Alert" \
+                -F "message=Test notification from NIDS" \
+                -F "priority=5"
+        fi
+    fi
 }
 
 echo "Testing the NIDS setup (Suricata)..."
@@ -25,5 +50,6 @@ fi
 
 send_test_traffic
 check_suricata_logs
+test_notifications
 
-echo "NIDS testing completed. Check the logs for alerts."
+echo "NIDS testing completed. Check the logs and notifications for alerts."

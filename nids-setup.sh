@@ -62,6 +62,11 @@ install_nids() {
         ./test-nids.sh
     fi
 
+    read -p "Configure alert notifications? (y/n): " notify_choice
+    if [[ "$notify_choice" =~ ^[Yy]$ ]]; then
+        ./configure-notifications.sh
+    fi
+
     echo "Suricata setup completed. Thank you for using the NIDS Setup Tool."
 }
 
